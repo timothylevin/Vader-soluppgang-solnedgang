@@ -32,14 +32,14 @@
                     return response.json();
                 })
                 .then(function(data) {
-                    var temperature = 'Temperature: ' + data.hourly.temperature_2m.value + '°C';
-                    var precipitationProbability = 'Precipitation Probability: ' + data.hourly.precipitation_probability.value + '%';
-                    var weatherDescription = 'Weather: ' + data.hourly.weather_code.value;
-                    var windSpeed = 'Wind Speed: ' + data.hourly.wind_speed_10m.value + ' m/s';
+                    var temperature = 'Temperatur: ' + data.hourly.temperature_2m.value + '°C';
+                    var precipitationProbability = 'Nederbörd: ' + data.hourly.precipitation_probability.value + '%';
+                    var weatherDescription = 'Väder: ' + data.hourly.weather_code.value;
+                    var windSpeed = 'Vindhastighet: ' + data.hourly.wind_speed_10m.value + ' m/s';
 
-                    var weatherText = temperature + ', ' + precipitationProbability + ', ' + weatherDescription + ', ' + windSpeed;
+                    var weatherText = temperature + '<br>' + precipitationProbability + '<br>' + weatherDescription + '<br>' + windSpeed;
 
-                    document.getElementById('weather-text').textContent = weatherText;
+                    document.getElementById('weather-text').innerHTML = weatherText;
                 })
                 .catch(function(error) {
                     console.log('Error fetching weather data:', error);
