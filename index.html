@@ -11,10 +11,7 @@
     <!-- Plats för att visa väderleksrapport -->
     <div id="weather-info">
         <h2>Väderleksrapport</h2>
-        <p id="temperature"></p>
-        <p id="precipitation-probability"></p>
-        <p id="weather-description"></p>
-        <p id="wind-speed"></p>
+        <p id="weather-text"></p>
     </div>
 
     <!-- Plats för att visa soluppgång/solnedgång -->
@@ -35,15 +32,14 @@
                     return response.json();
                 })
                 .then(function(data) {
-                    var temperature = data.hourly.temperature_2m.value + '°C';
-                    var precipitationProbability = data.hourly.precipitation_probability.value + '%';
-                    var weatherDescription = data.hourly.weather_code.value;
-                    var windSpeed = data.hourly.wind_speed_10m.value + ' m/s';
+                    var temperature = 'Temperature: ' + data.hourly.temperature_2m.value + '°C';
+                    var precipitationProbability = 'Precipitation Probability: ' + data.hourly.precipitation_probability.value + '%';
+                    var weatherDescription = 'Weather: ' + data.hourly.weather_code.value;
+                    var windSpeed = 'Wind Speed: ' + data.hourly.wind_speed_10m.value + ' m/s';
 
-                    document.getElementById('temperature').textContent = 'Temperature: ' + temperature;
-                    document.getElementById('precipitation-probability').textContent = 'Precipitation Probability: ' + precipitationProbability;
-                    document.getElementById('weather-description').textContent = 'Weather: ' + weatherDescription;
-                    document.getElementById('wind-speed').textContent = 'Wind Speed: ' + windSpeed;
+                    var weatherText = temperature + '<br>' + precipitationProbability + '<br>' + weatherDescription + '<br>' + windSpeed;
+
+                    document.getElementById('weather-text').innerHTML = weatherText;
                 })
                 .catch(function(error) {
                     console.log('Error fetching weather data:', error);
