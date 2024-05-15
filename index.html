@@ -6,7 +6,7 @@
     <title>Väder och Soluppgång/Solnedgång</title>
 </head>
 <body>
-    <h1>Väder och Soluppgång/Solnedgång</h1>
+    <h1><span id="location"></span></h1>
 
     <!-- Plats för att visa väderleksrapport -->
     <div id="weather-info">
@@ -23,59 +23,33 @@
 
     <!-- Skript för att hämta och visa väderleksrapport och soluppgång/solnedgång -->
     <script>
-        // Funktion för att hämta väderleksrapporten
-        function getWeather(latitude, longitude) {
-            var weatherAPIURL = 'https://api.open-meteo.com/v1/forecast?latitude=' + latitude + '&longitude=' + longitude + '&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m';
+        // Funktion för att hämta platsnamn baserat på användarens position
+        function getLocationName(latitude, longitude) {
+            var locationAPIURL = 'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + latitude + '&longitude=' + longitude + '&localityLanguage=sv';
 
-            fetch(weatherAPIURL)
+            fetch(locationAPIURL)
                 .then(function(response) {
                     return response.json();
                 })
                 .then(function(data) {
-                    var currentTemperature = 'Aktuell temperatur: ' + data.current.temperature_2m + '°C';
-                    var currentWindSpeed = 'Aktuell vindhastighet: ' + data.current.wind_speed_10m + ' m/s';
-
-                    var weatherText = currentTemperature + '<br>' + currentWindSpeed;
-
-                    document.getElementById('weather-text').innerHTML = weatherText;
+                    var locationName = data.locality; // Hämtar platsnamnet från API-responsen
+                    document.getElementById('location').textContent = locationName;
                 })
                 .catch(function(error) {
-                    console.log('Error fetching weather data:', error);
-                    document.getElementById('weather-text').textContent = 'Kunde inte hämta väderinformation.';
+                    console.log('Error fetching location data:', error);
+                    document.getElementById('location').textContent = 'Platsinformation kunde inte hämtas.';
                 });
         }
 
-        // Funktion för att hämta soluppgång/solnedgångstiderna
-        function getSunriseSunset(latitude, longitude) {
-            var sunriseSunsetAPIURL = 'https://api.sunrise-sunset.org/json?lat=' + latitude + '&lng=' + longitude + '&formatted=0';
-
-            fetch(sunriseSunsetAPIURL)
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(data) {
-                    var sunrise = new Date(data.results.sunrise);
-                    var sunset = new Date(data.results.sunset);
-
-                    // Konvertera tiden till användarens lokala tidszon
-                    var options = {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, hour: '2-digit', minute: '2-digit'};
-                    var sunriseLocal = sunrise.toLocaleString('sv-SE', options);
-                    var sunsetLocal = sunset.toLocaleString('sv-SE', options);
-
-                    document.getElementById('sunrise').textContent = 'Soluppgång: ' + sunriseLocal;
-                    document.getElementById('sunset').textContent = 'Solnedgång: ' + sunsetLocal;
-                })
-                .catch(function(error) {
-                    console.log('Error fetching sunrise/sunset data:', error);
-                    document.getElementById('sunrise').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
-                    document.getElementById('sunset').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
-                });
-        }
+        // Övrig kod för att hämta väder och soluppgång/solnedgång här...
 
         // Hämta användarens aktuella position
         navigator.geolocation.getCurrentPosition(function(position) {
             var latitude = position.coords.latitude;
             var longitude = position.coords.longitude;
+
+            // Hämta platsnamn och uppdatera rubriken
+            getLocationName(latitude, longitude);
 
             // Hämta väderleksrapport och soluppgång/solnedgångstider baserat på användarens position
             getWeather(latitude, longitude);
