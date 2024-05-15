@@ -7,50 +7,50 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #325e58; /* Bakgrundsfärgen */
-            color: white; /* Textfärgen */
+            background-color: #325e58;
+            color: white;
             margin: 0;
-            padding: 20px; /* Lite utfyllnad runt innehållet */
-            font-size: 16px; /* Textstorlek */
+            padding: 20px;
+            font-size: 16px;
         }
 
         .container {
-            display: flex; /* Flexbox för att placera allt på en rad */
-            flex-direction: column; /* Ändrat från row till column för att placera elementen under varandra */
-            align-items: flex-start; /* Vänsterjustera elementen */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
             width: 100%;
         }
 
         .info-container {
-            width: 100%; /* Bredden på varje del, justerat för att passa en-kolumn layout */
-            padding-bottom: 20px; /* Utrymme under varje grupp */
+            width: 100%;
+            padding-bottom: 20px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            margin-bottom: 20px; /* Lägg till utrymme mellan grupper */
+            margin-bottom: 20px;
         }
 
         h1, h2, p {
             margin: 0;
-            text-align: left; /* Justera text till vänster */
+            text-align: left;
         }
 
         #user-location h2,
         #weather-info h2,
         #sunrise-sunset-info h2 {
-            margin-bottom: 10px; /* Lägg till margin-bottom för att justera höjden */
+            margin-bottom: 10px;
         }
 
         h1 {
-            margin-bottom: 30px; /* Öka avståndet mellan rubrikerna */
+            margin-bottom: 30px;
         }
     </style>
 </head>
 <body>
-    <h1><a href="http://www.jaktkartan.se"><img src="https://github.com/timothylevin/Vader-soluppgang-solnedgang/raw/main/logo.png" alt="Jaktkartan.se logotyp" style="height: 50px;"></a></h1> <!-- Lägg till en rubrik högst upp med en länk -->
+    <h1><a href="http://www.jaktkartan.se"><img src="https://github.com/timothylevin/Vader-soluppgang-solnedgang/raw/main/logo.png" alt="Jaktkartan.se logotyp" style="height: 50px;"></a></h1>
     <div class="container">
         <div class="info-container" id="user-location">
-            <h2 style="margin-top: 20px;">Plats</h2> <!-- Lägg till margin-top för att öka avståndet mellan rubrikerna -->
+            <h2 style="margin-top: 20px;">Plats</h2>
             <p id="user-city"></p>
         </div>
 
@@ -66,10 +66,8 @@
         </div>
     </div>
 
-    <!-- Skript för att hämta och visa väderleksrapport, användarens närmaste ort och soluppgång/solnedgång -->
     <script>
-        // Funktion för att översätta symbolkoden till vanlig text på svenska
-        function translateWeatherSymbol(symbolCode) {
+        const translateWeatherSymbol = (symbolCode) => {
             switch(symbolCode) {
                 case 'clearsky_day':
                     return 'klart väder';
@@ -110,83 +108,68 @@
             }
         }
 
-        // Funktion för att hämta väderleksrapport baserat på användarens plats
-        function getWeather(latitude, longitude) {
-            var weatherAPIURL = 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=' + latitude + '&lon=' + longitude;
+        const getWeather = (latitude, longitude) => {
+            const weatherAPIURL = 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=' + latitude + '&lon=' + longitude;
 
             fetch(weatherAPIURL)
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(data) {
-                    // Hämta väderbeskrivningen från det första tidsserienobjektet
-                    var symbolCode = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
-                    var weatherDescription = translateWeatherSymbol(symbolCode);
+                .then(response => response.json())
+                .then(data => {
+                    const symbolCode = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
+                    const weatherDescription = translateWeatherSymbol(symbolCode);
                     document.getElementById('weather-text').textContent = 'Väder: ' + weatherDescription;
                 })
-                .catch(function(error) {
+                .catch(error => {
                     console.log('Error fetching weather data:', error);
                     document.getElementById('weather-text').textContent = 'Kunde inte hämta väderleksrapport.';
                 });
         }
 
-        // Funktion för att hämta användarens närmaste ort baserat på koordinaterna för soluppgång/solnedgång
-        function getUserCityFromSunriseSunset(latitude, longitude) {
-            var nominatimAPIURL = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + latitude + '&lon=' + longitude;
+        const getUserCityFromSunriseSunset = (latitude, longitude) => {
+            const nominatimAPIURL = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + latitude + '&lon=' + longitude;
 
             fetch(nominatimAPIURL)
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(data) {
-                    var city = data.address.city || data.address.town || data.address.village || data.address.hamlet || data.address.suburb || data.address.county || 'Okänd ort';
+                .then(response => response.json())
+                .then(data => {
+                    const city = data.address.city || data.address.town || data.address.village || data.address.hamlet || data.address.suburb || data.address.county || 'Okänd ort';
                     document.getElementById('user-city').textContent = city;
                 })
-                .catch(function(error) {
+                .catch(error => {
                     console.log('Error fetching user city:', error);
                     document.getElementById('user-city').textContent = 'Kunde inte hämta användarens ort.';
                 });
         }
 
-        // Funktion för att hämta soluppgång/solnedgångstiderna
-        function getSunriseSunset(latitude, longitude) {
-            var sunriseSunsetAPIURL = 'https://api.sunrise-sunset.org/json?lat=' + latitude + '&lng=' + longitude + '&formatted=0';
+        const getSunriseSunset = (latitude, longitude) => {
+            const sunriseSunsetAPIURL = 'https://api.sunrise-sunset.org/json?lat=' + latitude + '&lng=' + longitude + '&formatted=0';
 
             fetch(sunriseSunsetAPIURL)
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(data) {
-                    var sunrise = new Date(data.results.sunrise);
-                    var sunset = new Date(data.results.sunset);
+                .then(response => response.json())
+                .then(data => {
+                    const sunrise = new Date(data.results.sunrise);
+                    const sunset = new Date(data.results.sunset);
 
-                    // Använd koordinaterna för soluppgång/solnedgång för att uppskatta användarens närmaste ort
                     getUserCityFromSunriseSunset(latitude, longitude);
 
-                    // Konvertera tiden till användarens lokala tidszon
-                    var options = {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, hour: '2-digit', minute: '2-digit'};
-                    var sunriseLocal = sunrise.toLocaleString('sv-SE', options);
-                    var sunsetLocal = sunset.toLocaleString('sv-SE', options);
+                    const options = {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, hour: '2-digit', minute: '2-digit'};
+                    const sunriseLocal = sunrise.toLocaleString('sv-SE', options);
+                    const sunsetLocal = sunset.toLocaleString('sv-SE', options);
 
                     document.getElementById('sunrise').textContent = 'Soluppgång: ' + sunriseLocal;
                     document.getElementById('sunset').textContent = 'Solnedgång: ' + sunsetLocal;
 
-                    // Hämta väderleksrapport baserat på användarens position
                     getWeather(latitude, longitude);
                 })
-                .catch(function(error) {
+                .catch(error => {
                     console.log('Error fetching sunrise/sunset data:', error);
                     document.getElementById('sunrise').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
                     document.getElementById('sunset').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
                 });
         }
 
-        // Hämta användarens aktuella position
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
+        navigator.geolocation.getCurrentPosition(position => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
 
-            // Hämta soluppgång/solnedgångstider baserat på användarens position
             getSunriseSunset(latitude, longitude);
         });
     </script>
