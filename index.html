@@ -37,9 +37,9 @@
                     var weatherDescription = 'Weather: ' + data.hourly.weather_code.value;
                     var windSpeed = 'Wind Speed: ' + data.hourly.wind_speed_10m.value + ' m/s';
 
-                    var weatherText = temperature + '<br>' + precipitationProbability + '<br>' + weatherDescription + '<br>' + windSpeed;
+                    var weatherText = temperature + ', ' + precipitationProbability + ', ' + weatherDescription + ', ' + windSpeed;
 
-                    document.getElementById('weather-text').innerHTML = weatherText;
+                    document.getElementById('weather-text').textContent = weatherText;
                 })
                 .catch(function(error) {
                     console.log('Error fetching weather data:', error);
