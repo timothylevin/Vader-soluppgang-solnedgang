@@ -7,21 +7,27 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: left; /* Ändrat från "right" till "left" */
+            background-color: #325e58; /* Bakgrundsfärgen */
+            color: white; /* Textfärgen */
+            margin: 0;
+            padding: 20px; /* Lite utfyllnad runt innehållet */
+        }
+
+        .container {
+            display: flex; /* Flexbox för att placera allt på en rad */
+            flex-direction: row; /* Lägger elementen bredvid varandra */
+            align-items: center; /* Centrerar elementen vertikalt */
+            border: 2px solid #325e58; /* Ramens färg */
+            padding: 20px; /* Lite utfyllnad inuti ramen */
         }
 
         h1, h2, p {
             margin: 0;
         }
 
-        .container {
-            display: flex; /* Flexbox för att placera allt på en rad */
-            flex-direction: column;
-            align-items: center;
-        }
-
         #weather-info, #sunrise-sunset-info {
-            width: 50%; /* Bredden på varje sektion */
+            margin: 0 20px; /* Lite mellanrum mellan sektionerna */
+            flex: 1; /* Gör att sektionerna expanderar för att fylla utrymmet jämnt */
         }
     </style>
 </head>
