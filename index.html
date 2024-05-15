@@ -52,18 +52,29 @@
 
         // Funktion för att hämta soluppgång/solnedgångstiderna
         function getSunriseSunset(latitude, longitude) {
-            var sunriseSunsetAPIURL = 'https://api.sunrisesunset.io/json?lat=' + latitude + '&lng=' + longitude + '&apikey=https://api.sunrisesunset.io/json?lat=38.907192&lng=-77.036873';
+            var sunriseSunsetAPIURL = 'https://api.sunrise-sunset.org/json?lat=' + latitude + '&lng=' + longitude + '&formatted=0';
 
             fetch(sunriseSunsetAPIURL)
                 .then(function(response) {
                     return response.json();
                 })
                 .then(function(data) {
-                    var sunrise = data.results.sunrise;
-                    var sunset = data.results.sunset;
+                    var sunrise = new Date(data.results.sunrise);
+                    var sunset = new Date(data.results.sunset);
 
-                    document.getElementById('sunrise').textContent = 'Sunrise: ' + sunrise;
-                    document.getElementById('sunset').textContent = 'Sunset: ' + sunset;
+                    // Hämta användarens nuvarande tidszonoffset
+                    var userTimezoneOffset = new Date().getTimezoneOffset();
+                    
+                    // Justera tiden för soluppgång och solnedgång baserat på tidszonoffset
+                    sunrise.setMinutes(sunrise.getMinutes() + userTimezoneOffset);
+                    sunset.setMinutes(sunset.getMinutes() + userTimezoneOffset);
+
+                    // Formatera tiden till 24-timmarsformat
+                    var sunriseFormatted = sunrise.getHours() + ":" + sunrise.getMinutes();
+                    var sunsetFormatted = sunset.getHours() + ":" + sunset.getMinutes();
+
+                    document.getElementById('sunrise').textContent = 'Sunrise: ' + sunriseFormatted;
+                    document.getElementById('sunset').textContent = 'Sunset: ' + sunsetFormatted;
                 })
                 .catch(function(error) {
                     console.log('Error fetching sunrise/sunset data:', error);
