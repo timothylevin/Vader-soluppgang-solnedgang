@@ -29,6 +29,24 @@
 
     <!-- Skript för att hämta och visa väderleksrapport, användarens närmaste ort och soluppgång/solnedgång -->
     <script>
+        // Funktion för att hämta väderleksrapport baserat på användarens plats
+        function getWeather(latitude, longitude) {
+            var weatherAPIURL = 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=' + latitude + '&lon=' + longitude;
+
+            fetch(weatherAPIURL)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    var weatherDescription = data.properties.timeseries[0].data.next_1_hours.summary.symbol_desc;
+                    document.getElementById('weather-text').textContent = 'Väder: ' + weatherDescription;
+                })
+                .catch(function(error) {
+                    console.log('Error fetching weather data:', error);
+                    document.getElementById('weather-text').textContent = 'Kunde inte hämta väderleksrapport.';
+                });
+        }
+
         // Funktion för att hämta användarens närmaste ort baserat på koordinaterna för soluppgång/solnedgång
         function getUserCityFromSunriseSunset(latitude, longitude) {
             var nominatimAPIURL = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + latitude + '&lon=' + longitude;
@@ -69,6 +87,9 @@
 
                     document.getElementById('sunrise').textContent = 'Soluppgång: ' + sunriseLocal;
                     document.getElementById('sunset').textContent = 'Solnedgång: ' + sunsetLocal;
+
+                    // Hämta väderleksrapport baserat på användarens position
+                    getWeather(latitude, longitude);
                 })
                 .catch(function(error) {
                     console.log('Error fetching sunrise/sunset data:', error);
