@@ -31,14 +31,14 @@
     <script>
         // Funktion för att hämta användarens närmaste ort baserat på koordinaterna för soluppgång/solnedgång
         function getUserCityFromSunriseSunset(latitude, longitude) {
-            var geocodingAPIURL = 'https://api.opencagedata.com/geocode/v1/json?q=' + latitude + '+' + longitude + '&key=YOUR_API_KEY';
+            var nominatimAPIURL = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + latitude + '&lon=' + longitude;
 
-            fetch(geocodingAPIURL)
+            fetch(nominatimAPIURL)
                 .then(function(response) {
                     return response.json();
                 })
                 .then(function(data) {
-                    var city = data.results[0].components.city;
+                    var city = data.address.city || data.address.town || data.address.village || data.address.hamlet || data.address.suburb || data.address.county || 'Okänd ort';
                     document.getElementById('user-city').textContent = city;
                 })
                 .catch(function(error) {
