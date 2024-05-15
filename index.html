@@ -7,39 +7,44 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: right;
-            direction: rtl;
+            text-align: left; /* Ändrat från "right" till "left" */
         }
 
-        h2 {
-            font-weight: bold;
+        h1, h2, p {
+            margin: 0;
         }
 
-        p {
-            font-weight: normal;
+        .container {
+            display: flex; /* Flexbox för att placera allt på en rad */
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #weather-info, #sunrise-sunset-info {
+            width: 50%; /* Bredden på varje sektion */
         }
     </style>
 </head>
 <body>
-    <!-- Användarens närmaste ort baserat på soluppgång/solnedgång -->
-    <div id="user-location">
-        <h2>Din närmaste ort baserat på soluppgång/solnedgång:</h2>
-        <p id="user-city"></p>
-    </div>
+    <div class="container">
+        <h1>Väder och Soluppgång/Solnedgång</h1>
+        <div id="user-location">
+            <h2>Din närmaste ort baserat på soluppgång/solnedgång:</h2>
+            <p id="user-city"></p>
+        </div>
 
-    <h1>Väder och Soluppgång/Solnedgång</h1>
+        <!-- Plats för att visa väderleksrapport -->
+        <div id="weather-info">
+            <h2>Väderleksrapport</h2>
+            <p id="weather-text"></p>
+        </div>
 
-    <!-- Plats för att visa väderleksrapport -->
-    <div id="weather-info">
-        <h2>Väderleksrapport</h2>
-        <p id="weather-text"></p>
-    </div>
-
-    <!-- Plats för att visa soluppgång/solnedgång -->
-    <div id="sunrise-sunset-info">
-        <h2>Soluppgång/Solnedgång</h2>
-        <p id="sunrise"></p>
-        <p id="sunset"></p>
+        <!-- Plats för att visa soluppgång/solnedgång -->
+        <div id="sunrise-sunset-info">
+            <h2>Soluppgång/Solnedgång</h2>
+            <p id="sunrise"></p>
+            <p id="sunset"></p>
+        </div>
     </div>
 
     <!-- Skript för att hämta och visa väderleksrapport, användarens närmaste ort och soluppgång/solnedgång -->
