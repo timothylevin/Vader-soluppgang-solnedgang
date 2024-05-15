@@ -16,52 +16,45 @@
 
         .container {
             display: flex; /* Flexbox för att placera allt på en rad */
-            flex-direction: column; /* Ändra till kolumnlayout för att elementen ska staplas vertikalt */
-            justify-content: center; /* Centrerar elementen horisontellt */
-            align-items: center; /* Centrerar elementen vertikalt */
+            flex-direction: row; /* Elementen ska ligga bredvid varandra */
+            justify-content: space-between; /* Låt elementen fylla utrymmet jämnt */
+            align-items: flex-start; /* Justera vertikalt så att de börjar från toppen */
+            width: 100%;
         }
 
         .info-container {
-            display: flex; /* Flexbox för att placera allt på en rad */
-            justify-content: space-between; /* Justera avståndet mellan elementen */
-            width: 100%; /* Sätt bredden till 100% för att fylla ut utrymmet */
-            margin-top: 20px; /* Lite mellanrum ovanför container */
+            width: 30%; /* Bredden på varje del */
         }
 
-        h1, h2, p {
+        h2, p {
             margin: 0;
-            font-size: 16px; /* Textstorlek */
+        }
+
+        #user-location h2 {
+            margin-bottom: 10px;
         }
 
         #weather-info, #sunrise-sunset-info {
-            flex: 1; /* Gör att sektionerna expanderar för att fylla utrymmet jämnt */
-            margin: 0 20px; /* Lite mellanrum mellan sektionerna */
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Väder och Soluppgång/Solnedgång</h1>
-        
-        <div id="user-location">
+        <div class="info-container" id="user-location">
             <h2>Din närmaste ort baserat på soluppgång/solnedgång:</h2>
             <p id="user-city"></p>
         </div>
 
-        <!-- Gemensam container för väderleksrapport och soluppgång/solnedgång -->
-        <div class="info-container">
-            <!-- Plats för att visa väderleksrapport -->
-            <div id="weather-info">
-                <h2>Väderleksrapport</h2>
-                <p id="weather-text"></p>
-            </div>
+        <div class="info-container" id="weather-info">
+            <h2>Väderleksrapport</h2>
+            <p id="weather-text"></p>
+        </div>
 
-            <!-- Plats för att visa soluppgång/solnedgång -->
-            <div id="sunrise-sunset-info">
-                <h2>Soluppgång/Solnedgång</h2>
-                <p id="sunrise"></p>
-                <p id="sunset"></p>
-            </div>
+        <div class="info-container" id="sunrise-sunset-info">
+            <h2>Soluppgång/Solnedgång</h2>
+            <p id="sunrise"></p>
+            <p id="sunset"></p>
         </div>
     </div>
 
