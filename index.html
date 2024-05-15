@@ -40,13 +40,22 @@
         #sunrise-sunset-info h2 {
             margin-bottom: 10px; /* Lägg till margin-bottom för att justera höjden */
         }
+
+        #weather-info,
+        #sunrise-sunset-info {
+            display: none; /* Göm rubrikerna men behåll innehållet */
+        }
+
+        h1 {
+            margin-bottom: 30px; /* Öka avståndet mellan rubrikerna */
+        }
     </style>
 </head>
 <body>
     <h1><a href="http://www.jaktkartan.se" style="color: white; text-decoration: none;">Jaktkartan.se</a></h1> <!-- Lägg till en rubrik högst upp med en länk -->
     <div class="container">
         <div class="info-container" id="user-location">
-            <h2>Plats</h2>
+            <h2 style="margin-top: 20px;">Plats</h2> <!-- Lägg till margin-top för att öka avståndet mellan rubrikerna -->
             <p id="user-city"></p>
         </div>
 
