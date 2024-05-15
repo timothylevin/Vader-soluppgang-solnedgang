@@ -29,6 +29,48 @@
 
     <!-- Skript för att hämta och visa väderleksrapport, användarens närmaste ort och soluppgång/solnedgång -->
     <script>
+        // Funktion för att översätta symbolkoden till vanlig text på svenska
+        function translateWeatherSymbol(symbolCode) {
+            switch(symbolCode) {
+                case 'clearsky_day':
+                    return 'klart väder';
+                case 'clearsky_night':
+                    return 'klart väder (natt)';
+                case 'partlycloudy_day':
+                    return 'delvis molnigt';
+                case 'partlycloudy_night':
+                    return 'delvis molnigt (natt)';
+                case 'cloudy':
+                    return 'molnigt';
+                case 'rain':
+                    return 'regn';
+                case 'lightrain_showers_day':
+                    return 'lätt regnskurar';
+                case 'lightrain_showers_night':
+                    return 'lätt regnskurar (natt)';
+                case 'rain_showers_day':
+                    return 'regnskurar';
+                case 'rain_showers_night':
+                    return 'regnskurar (natt)';
+                case 'thunderstorm':
+                    return 'åska';
+                case 'sleet':
+                    return 'snöblandat regn';
+                case 'snow':
+                    return 'snö';
+                case 'sleet_showers_day':
+                    return 'snöblandade regnskurar';
+                case 'sleet_showers_night':
+                    return 'snöblandade regnskurar (natt)';
+                case 'snow_showers_day':
+                    return 'snöskurar';
+                case 'snow_showers_night':
+                    return 'snöskurar (natt)';
+                default:
+                    return 'okänt väder';
+            }
+        }
+
         // Funktion för att hämta väderleksrapport baserat på användarens plats
         function getWeather(latitude, longitude) {
             var weatherAPIURL = 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=' + latitude + '&lon=' + longitude;
@@ -39,7 +81,8 @@
                 })
                 .then(function(data) {
                     // Hämta väderbeskrivningen från det första tidsserienobjektet
-                    var weatherDescription = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
+                    var symbolCode = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
+                    var weatherDescription = translateWeatherSymbol(symbolCode);
                     document.getElementById('weather-text').textContent = 'Väder: ' + weatherDescription;
                 })
                 .catch(function(error) {
