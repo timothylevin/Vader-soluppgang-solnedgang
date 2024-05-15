@@ -38,7 +38,8 @@
                     return response.json();
                 })
                 .then(function(data) {
-                    var weatherDescription = data.properties.timeseries[0].data.next_1_hours.summary.symbol_desc;
+                    // Hämta väderbeskrivningen från det första tidsserienobjektet
+                    var weatherDescription = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
                     document.getElementById('weather-text').textContent = 'Väder: ' + weatherDescription;
                 })
                 .catch(function(error) {
