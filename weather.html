@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Väder och Soluppgång/Solnedgång</title>
+</head>
+<body>
+    <h1>Väder och Soluppgång/Solnedgång</h1>
+
+    <!-- Plats för att visa väderleksrapport -->
+    <div id="weather-info">
+        <h2>Väderleksrapport</h2>
+        <p id="temperature"></p>
+        <p id="precipitation-probability"></p>
+        <p id="weather-description"></p>
+        <p id="wind-speed"></p>
+    </div>
+
+    <!-- Plats för att visa soluppgång/solnedgång -->
+    <div id="sunrise-sunset-info">
+        <h2>Soluppgång/Solnedgång</h2>
+        <p id="sunrise"></p>
+        <p id="sunset"></p>
+    </div>
+
+    <!-- Skript för att hämta och visa väderleksrapport och soluppgång/solnedgång -->
+    <script>
+        // Funktion för att hämta väderleksrapporten
+        function getWeather(latitude, longitude) {
+            var weatherAPIURL = 'https://api.open-meteo.com/v1/forecast?latitude=' + latitude + '&longitude=' + longitude + '&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m&wind_speed_unit=ms&apikey=https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m&wind_speed_unit=ms';
+
+            fetch(weatherAPIURL)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    var temperature = data.hourly.temperature_2m.value + '°C';
+                    var precipitationProbability = data.hourly.precipitation_probability.value + '%';
+                    var weatherDescription = data.hourly.weather_code.value;
+                    var windSpeed = data.hourly.wind_speed_10m.value + ' m/s';
+
+                    document.getElementById('temperature').textContent = 'Temperature: ' + temperature;
+                    document.getElementById('precipitation-probability').textContent = 'Precipitation Probability: ' + precipitationProbability;
+                    document.getElementById('weather-description').textContent = 'Weather: ' + weatherDescription;
+                    document.getElementById('wind-speed').textContent = 'Wind Speed: ' + windSpeed;
+                })
+                .catch(function(error) {
+                    console.log('Error fetching weather data:', error);
+                });
+        }
+
+        // Funktion för att hämta soluppgång/solnedgångstiderna
+        function getSunriseSunset(latitude, longitude) {
+            var sunriseSunsetAPIURL = 'https://api.sunrisesunset.io/json?lat=' + latitude + '&lng=' + longitude + '&apikey=https://api.sunrisesunset.io/json?lat=38.907192&lng=-77.036873';
+
+            fetch(sunriseSunsetAPIURL)
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    var sunrise = data.results.sunrise;
+                    var sunset = data.results.sunset;
+
+                    document.getElementById('sunrise').textContent = 'Sunrise: ' + sunrise;
+                    document.getElementById('sunset').textContent = 'Sunset: ' + sunset;
+                })
+                .catch(function(error) {
+                    console.log('Error fetching sunrise/sunset data:', error);
+                });
+        }
+
+        // Hämta användarens aktuella position
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            // Hämta väderleksrapport och soluppgång/solnedgångstider baserat på användarens position
+            getWeather(latitude, longitude);
+            getSunriseSunset(latitude, longitude);
+        });
+    </script>
+</body>
+</html>
