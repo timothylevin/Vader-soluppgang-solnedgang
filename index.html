@@ -17,7 +17,7 @@
         .container {
             display: flex; /* Flexbox för att placera allt på en rad */
             flex-direction: row; /* Elementen ska ligga bredvid varandra */
-            justify-content: flex-start; /* Justera till vänster */
+            justify-content: space-between; /* Justera till vänster */
             align-items: center; /* Centrera vertikalt */
             width: 100%;
         }
@@ -25,6 +25,9 @@
         .info-container {
             width: 30%; /* Bredden på varje del */
             padding-right: 20px; /* Utrymme till höger om varje grupp */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         h2, p {
@@ -33,12 +36,9 @@
         }
 
         #user-location h2,
-        #weather-info h2 { /* Lägg till för att justera höjden för båda rubrikerna */
-            margin-bottom: 10px;
-        }
-
-        #sunrise-sunset-info h2 { /* Justera höjden för denna rubrik */
-            margin-bottom: 0;
+        #weather-info h2,
+        #sunrise-sunset-info h2 {
+            margin-bottom: 10px; /* Lägg till margin-bottom för att justera höjden */
         }
 
         #weather-info, #sunrise-sunset-info {
