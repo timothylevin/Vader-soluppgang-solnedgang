@@ -70,11 +70,11 @@
                     sunset.setMinutes(sunset.getMinutes() + userTimezoneOffset);
 
                     // Formatera tiden till 24-timmarsformat
-                    var sunriseFormatted = sunrise.getHours() + ":" + sunrise.getMinutes();
-                    var sunsetFormatted = sunset.getHours() + ":" + sunset.getMinutes();
+                    var sunriseFormatted = ('0' + sunrise.getHours()).slice(-2) + ":" + ('0' + sunrise.getMinutes()).slice(-2);
+                    var sunsetFormatted = ('0' + sunset.getHours()).slice(-2) + ":" + ('0' + sunset.getMinutes()).slice(-2);
 
-                    document.getElementById('sunrise').textContent = 'Sunrise: ' + sunriseFormatted;
-                    document.getElementById('sunset').textContent = 'Sunset: ' + sunsetFormatted;
+                    document.getElementById('sunrise').textContent = 'Soluppgång: ' + sunriseFormatted;
+                    document.getElementById('sunset').textContent = 'Solnedgång: ' + sunsetFormatted;
                 })
                 .catch(function(error) {
                     console.log('Error fetching sunrise/sunset data:', error);
