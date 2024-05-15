@@ -8,6 +8,12 @@
 <body>
     <h1>Väder och Soluppgång/Solnedgång</h1>
 
+    <!-- Användarens närmaste ort baserat på soluppgång/solnedgång -->
+    <div id="user-location">
+        <h2>Din närmaste ort baserat på soluppgång/solnedgång:</h2>
+        <p id="user-city"></p>
+    </div>
+
     <!-- Plats för att visa väderleksrapport -->
     <div id="weather-info">
         <h2>Väderleksrapport</h2>
@@ -21,27 +27,23 @@
         <p id="sunset"></p>
     </div>
 
-    <!-- Skript för att hämta och visa väderleksrapport och soluppgång/solnedgång -->
+    <!-- Skript för att hämta och visa väderleksrapport, användarens närmaste ort och soluppgång/solnedgång -->
     <script>
-        // Funktion för att hämta väderleksrapporten
-        function getWeather(latitude, longitude) {
-            var weatherAPIURL = 'https://api.open-meteo.com/v1/forecast?latitude=' + latitude + '&longitude=' + longitude + '&current=temperature_2m,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,wind_speed_10m';
+        // Funktion för att hämta användarens närmaste ort baserat på koordinaterna för soluppgång/solnedgång
+        function getUserCityFromSunriseSunset(latitude, longitude) {
+            var geocodingAPIURL = 'https://api.opencagedata.com/geocode/v1/json?q=' + latitude + '+' + longitude + '&key=YOUR_API_KEY';
 
-            fetch(weatherAPIURL)
+            fetch(geocodingAPIURL)
                 .then(function(response) {
                     return response.json();
                 })
                 .then(function(data) {
-                    var currentTemperature = 'Aktuell temperatur: ' + data.current.temperature_2m + '°C';
-                    var currentWindSpeed = 'Aktuell vindhastighet: ' + data.current.wind_speed_10m + ' m/s';
-
-                    var weatherText = currentTemperature + '<br>' + currentWindSpeed;
-
-                    document.getElementById('weather-text').innerHTML = weatherText;
+                    var city = data.results[0].components.city;
+                    document.getElementById('user-city').textContent = city;
                 })
                 .catch(function(error) {
-                    console.log('Error fetching weather data:', error);
-                    document.getElementById('weather-text').textContent = 'Kunde inte hämta väderinformation.';
+                    console.log('Error fetching user city:', error);
+                    document.getElementById('user-city').textContent = 'Kunde inte hämta användarens ort.';
                 });
         }
 
@@ -56,6 +58,9 @@
                 .then(function(data) {
                     var sunrise = new Date(data.results.sunrise);
                     var sunset = new Date(data.results.sunset);
+
+                    // Använd koordinaterna för soluppgång/solnedgång för att uppskatta användarens närmaste ort
+                    getUserCityFromSunriseSunset(latitude, longitude);
 
                     // Konvertera tiden till användarens lokala tidszon
                     var options = {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, hour: '2-digit', minute: '2-digit'};
@@ -77,8 +82,7 @@
             var latitude = position.coords.latitude;
             var longitude = position.coords.longitude;
 
-            // Hämta väderleksrapport och soluppgång/solnedgångstider baserat på användarens position
-            getWeather(latitude, longitude);
+            // Hämta soluppgång/solnedgångstider baserat på användarens position
             getSunriseSunset(latitude, longitude);
         });
     </script>
