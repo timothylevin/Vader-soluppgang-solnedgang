@@ -62,19 +62,13 @@
                     var sunrise = new Date(data.results.sunrise);
                     var sunset = new Date(data.results.sunset);
 
-                    // Hämta användarens nuvarande tidszonoffset
-                    var userTimezoneOffset = new Date().getTimezoneOffset();
-                    
-                    // Justera tiden för soluppgång och solnedgång baserat på tidszonoffset
-                    sunrise.setMinutes(sunrise.getMinutes() + userTimezoneOffset);
-                    sunset.setMinutes(sunset.getMinutes() + userTimezoneOffset);
+                    // Konvertera tiden till användarens lokala tidszon
+                    var options = {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, hour: '2-digit', minute: '2-digit'};
+                    var sunriseLocal = sunrise.toLocaleString('sv-SE', options);
+                    var sunsetLocal = sunset.toLocaleString('sv-SE', options);
 
-                    // Formatera tiden till 24-timmarsformat
-                    var sunriseFormatted = ('0' + sunrise.getHours()).slice(-2) + ":" + ('0' + sunrise.getMinutes()).slice(-2);
-                    var sunsetFormatted = ('0' + sunset.getHours()).slice(-2) + ":" + ('0' + sunset.getMinutes()).slice(-2);
-
-                    document.getElementById('sunrise').textContent = 'Soluppgång: ' + sunriseFormatted;
-                    document.getElementById('sunset').textContent = 'Solnedgång: ' + sunsetFormatted;
+                    document.getElementById('sunrise').textContent = 'Soluppgång: ' + sunriseLocal;
+                    document.getElementById('sunset').textContent = 'Solnedgång: ' + sunsetLocal;
                 })
                 .catch(function(error) {
                     console.log('Error fetching sunrise/sunset data:', error);
