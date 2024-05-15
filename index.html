@@ -37,12 +37,13 @@
                     var weatherDescription = 'Väder: ' + data.hourly.weather_code.value;
                     var windSpeed = 'Vindhastighet: ' + data.hourly.wind_speed_10m.value + ' m/s';
 
-                    var weatherText = temperature + '<br>' + precipitationProbability + '<br>' + weatherDescription + '<br>' + windSpeed;
+                    var weatherText = temperature + ', ' + precipitationProbability + ', ' + weatherDescription + ', ' + windSpeed;
 
-                    document.getElementById('weather-text').innerHTML = weatherText;
+                    document.getElementById('weather-text').textContent = weatherText;
                 })
                 .catch(function(error) {
                     console.log('Error fetching weather data:', error);
+                    document.getElementById('weather-text').textContent = 'Kunde inte hämta väderinformation.';
                 });
         }
 
@@ -68,6 +69,8 @@
                 })
                 .catch(function(error) {
                     console.log('Error fetching sunrise/sunset data:', error);
+                    document.getElementById('sunrise').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
+                    document.getElementById('sunset').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
                 });
         }
 
