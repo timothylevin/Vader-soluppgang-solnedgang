@@ -166,24 +166,21 @@
                         const weather = translateWeatherSymbol(timeseries[i].data.next_1_hours.summary.symbol_code);
 
                         if (weather !== currentWeather) {
-                            // Start a new weather group
                             if (currentWeather !== null) {
-                                weatherText += '</div>'; // Add closing tag for previous group
+                                weatherText += '</div>';
                             }
                             weatherText += `<div class="weather-group"><span class="weather-time">${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}</span>: ${weather}`;
                             currentWeather = weather;
                         } else {
-                            // Append time to existing weather group
                             weatherText += ` - ${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}`;
                         }
                     }
 
-                    // Add closing tag for last group
                     if (currentWeather !== null) {
                         weatherText += '</div>';
                     }
 
-                    document.getElementById('weather-text').innerHTML = weatherText;
+                    document.getElementById('weather-text').innerText = weatherText;
                 })
                 .catch(error => {
                     console.log('Error fetching weather forecast:', error);
