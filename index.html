@@ -35,7 +35,6 @@
             text-align: left;
         }
 
-        #user-location h2,
         #weather-info h2,
         #sunrise-sunset-info h2 {
             margin-bottom: 10px;
@@ -56,11 +55,6 @@
 <body>
     <h1><a href="http://www.jaktkartan.se"><img src="https://github.com/timothylevin/Vader-soluppgang-solnedgang/raw/main/logo.png" alt="Jaktkartan.se logotyp" style="height: 50px;"></a></h1>
     <div class="container">
-        <div class="info-container" id="user-location">
-            <h2 style="margin-top: 20px;">Plats</h2>
-            <p id="user-city"></p>
-        </div>
-
         <div class="info-container" id="weather-info">
             <h2>Väderleksrapport</h2>
             <p id="weather-text"></p>
@@ -134,21 +128,6 @@
                 });
         }
 
-        const getUserCityFromSunriseSunset = (latitude, longitude) => {
-            const nominatimAPIURL = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + latitude + '&lon=' + longitude;
-
-            fetch(nominatimAPIURL)
-                .then(response => response.json())
-                .then(data => {
-                    const city = data.address.city || data.address.town || data.address.village || data.address.hamlet || data.address.suburb || data.address.county || 'Okänd ort';
-                    document.getElementById('user-city').textContent = city;
-                })
-                .catch(error => {
-                    console.log('Error fetching user city:', error);
-                    document.getElementById('user-city').textContent = 'Kunde inte hämta användarens ort.';
-                });
-        }
-
         const getSunriseSunset = (latitude, longitude) => {
             const sunriseSunsetAPIURL = 'https://api.sunrise-sunset.org/json?lat=' + latitude + '&lng=' + longitude + '&formatted=0';
 
@@ -157,8 +136,6 @@
                 .then(data => {
                     const sunrise = new Date(data.results.sunrise);
                     const sunset = new Date(data.results.sunset);
-
-                    getUserCityFromSunriseSunset(latitude, longitude);
 
                     const options = {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, hour: '2-digit', minute: '2-digit'};
                     const sunriseLocal = sunrise.toLocaleString('sv-SE', options);
