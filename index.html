@@ -43,15 +43,6 @@
             margin-bottom: 10px;
         }
 
-        .weather-group {
-            margin-bottom: 10px;
-        }
-
-        .weather-time {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
         #map {
             height: 300px;
             width: 100%;
@@ -69,13 +60,13 @@
     <div class="container">
         <div class="info-container" id="weather-info">
             <h2>Väderleksrapport</h2>
-            <div id="weather-text"></div>
+            <div id="weather-text">Laddar väder...</div>
         </div>
 
         <div class="info-container" id="sunrise-sunset-info">
             <h2>Soluppgång/Solnedgång</h2>
-            <p id="sunrise"></p>
-            <p id="sunset"></p>
+            <p id="sunrise">Laddar soluppgång...</p>
+            <p id="sunset">Laddar solnedgång...</p>
         </div>
     </div>
 
@@ -83,47 +74,6 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        const translateWeatherSymbol = (symbolCode) => {
-            switch(symbolCode) {
-                case 'clearsky_day':
-                    return 'klart väder';
-                case 'clearsky_night':
-                    return 'klart väder (natt)';
-                case 'partlycloudy_day':
-                    return 'delvis molnigt';
-                case 'partlycloudy_night':
-                    return 'delvis molnigt (natt)';
-                case 'cloudy':
-                    return 'molnigt';
-                case 'rain':
-                    return 'regn';
-                case 'lightrain_showers_day':
-                    return 'lätt regnskurar';
-                case 'lightrain_showers_night':
-                    return 'lätt regnskurar (natt)';
-                case 'rain_showers_day':
-                    return 'regnskurar';
-                case 'rain_showers_night':
-                    return 'regnskurar (natt)';
-                case 'thunderstorm':
-                    return 'åska';
-                case 'sleet':
-                    return 'snöblandat regn';
-                case 'snow':
-                    return 'snö';
-                case 'sleet_showers_day':
-                    return 'snöblandade regnskurar';
-                case 'sleet_showers_night':
-                    return 'snöblandade regnskurar (natt)';
-                case 'snow_showers_day':
-                    return 'snöskurar';
-                case 'snow_showers_night':
-                    return 'snöskurar (natt)';
-                default:
-                    return 'okänt väder';
-            }
-        }
-
         const getSunriseSunset = (latitude, longitude) => {
             const sunriseSunsetAPIURL = 'https://api.sunrise-sunset.org/json?lat=' + latitude + '&lng=' + longitude + '&formatted=0';
 
@@ -158,34 +108,15 @@
                 .then(data => {
                     const timeseries = data.properties.timeseries;
 
-                    let currentWeather = null;
-                    let weatherContainer = document.getElementById('weather-text');
-                    let weatherGroup = document.createElement('div');
+                    let weatherForecast = '';
 
-                    for (let i = 0; i < timeseries.length; i++) {
+                    for (let i = 0; i < 24; i++) {
                         const time = new Date(timeseries[i].time);
-                        const weather = translateWeatherSymbol(timeseries[i].data.next_1_hours.summary.symbol_code);
-
-                        if (weather !== currentWeather) {
-                            if (currentWeather !== null) {
-                                weatherContainer.appendChild(weatherGroup);
-                            }
-                            weatherGroup = document.createElement('div');
-                            weatherGroup.classList.add('weather-group');
-                            weatherGroup.innerHTML = `<span class="weather-time">${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}</span>: ${weather}`;
-                            currentWeather = weather;
-                        } else {
-                            const weatherTime = document.createElement('span');
-                            weatherTime.classList.add('weather-time');
-                            weatherTime.textContent = `${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}`;
-                            weatherGroup.appendChild(document.createTextNode(' - '));
-                            weatherGroup.appendChild(weatherTime);
-                        }
+                        const weather = timeseries[i].data.next_1_hours.summary.symbol_code;
+                        weatherForecast += `${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${weather}\n`;
                     }
 
-                    if (currentWeather !== null) {
-                        weatherContainer.appendChild(weatherGroup);
-                    }
+                    document.getElementById('weather-text').textContent = '24-timmars prognos: \n' + weatherForecast;
                 })
                 .catch(error => {
                     console.log('Error fetching weather forecast:', error);
