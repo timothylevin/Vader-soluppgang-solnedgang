@@ -36,7 +36,7 @@
 
         h2 {
             margin-bottom: 20px;
-            color: #325e58; /* Ändrad färg */
+            color: #325e58;
         }
 
         p {
@@ -49,15 +49,14 @@
             margin-top: 30px;
         }
 
-        /* Större logotypbild */
         h1 img {
-            height: 70px; /* Justera höjden efter behov */
+            height: 70px;
         }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-    <h1><a href="http://www.jaktkartan.se"><img src="https://github.com/timothylevin/Vader-soluppgang-solnedgang/raw/main/logo.png" alt="Jaktkartan.se logotyp" style="height: 70px;"></a></h1> <!-- Ändrad höjd -->
+    <h1><a href="http://www.jaktkartan.se"><img src="https://github.com/timothylevin/Vader-soluppgang-solnedgang/raw/main/logo.png" alt="Jaktkartan.se logotyp" style="height: 70px;"></a></h1>
     <div class="container">
         <div class="info-container" id="weather-info">
             <h2>Väderleksrapport</h2>
@@ -76,62 +75,65 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
         const translateWeatherSymbol = (symbolCode) => {
-            switch(symbolCode) {
-                case 'clearsky_day':
-                    return 'klart väder';
-                case 'clearsky_night':
-                    return 'klart väder (natt)';
-                case 'partlycloudy_day':
-                    return 'delvis molnigt';
-                case 'partlycloudy_night':
-                    return 'delvis molnigt (natt)';
-                case 'cloudy':
-                    return 'molnigt';
-                case 'rain':
-                    return 'regn';
-                case 'lightrain_showers_day':
-                    return 'lätt regnskurar';
-                case 'lightrain_showers_night':
-                    return 'lätt regnskurar (natt)';
-                case 'rain_showers_day':
-                    return 'regnskurar';
-                case 'rain_showers_night':
-                    return 'regnskurar (natt)';
-                case 'thunderstorm':
-                    return 'åska';
-                case 'sleet':
-                    return 'snöblandat regn';
-                case 'snow':
-                    return 'snö';
-                case 'sleet_showers_day':
-                    return 'snöblandade regnskurar';
-                case 'sleet_showers_night':
-                    return 'snöblandade regnskurar (natt)';
-                case 'snow_showers_day':
-                    return 'snöskurar';
-                case 'snow_showers_night':
-                    return 'snöskurar (natt)';
-                default:
-                    return 'okänt väder';
-            }
+            // Funktion för att översätta vädersymboler
         }
 
         const getWeatherForecast = (latitude, longitude) => {
+            // Funktion för att hämta väderprognos
+        }
+
+        const getSunriseSunset = (latitude, longitude) => {
+            // Funktion för att hämta soluppgång/solnedgångstider
+        }
+
+        const createMap = (latitude, longitude) => {
+            // Funktion för att skapa kartan
+        }
+
+        navigator.geolocation.getCurrentPosition(position => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            getSunriseSunset(latitude, longitude);
+        });
+
+        const now = new Date();
+        const currentHour = now.getHours();
+        const startHour = currentHour > 0 ? currentHour : 0; // Starta från nuvarande timme om det är före midnatt, annars från midnatt
+        const endHour = startHour + 24;
+
+        const showWeatherForecastForNext24Hours = (latitude, longitude) => {
             const weatherAPIURL = 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=' + latitude + '&lon=' + longitude;
 
             fetch(weatherAPIURL)
                 .then(response => response.json())
                 .then(data => {
+                    const forecasts
                     const forecasts = data.properties.timeseries;
-                    const weatherContainer = document.getElementById('weather-text');
 
-                    for (let i = 0; i < 5; i++) {
+                    let weatherSummary = {};
+                    for (let i = 0; i < forecasts.length; i++) {
                         const forecast = forecasts[i];
                         const time = new Date(forecast.time);
-                        const symbolCode = forecast.data.next_1_hours.summary.symbol_code;
-                        const weatherDescription = translateWeatherSymbol(symbolCode);
-                        const forecastTime = i === 0 ? 'inom 1 timme' : 'inom ' + (i + 1) + ' timmar';
-                        const forecastText = `${forecastTime}: ${weatherDescription}`;
+                        const hour = time.getHours();
+
+                        if (hour >= startHour && hour < endHour) {
+                            const symbolCode = forecast.data.next_1_hours.summary.symbol_code;
+                            const weatherDescription = translateWeatherSymbol(symbolCode);
+
+                            if (!weatherSummary[weatherDescription]) {
+                                weatherSummary[weatherDescription] = [hour];
+                            } else {
+                                weatherSummary[weatherDescription].push(hour);
+                            }
+                        }
+                    }
+
+                    const weatherContainer = document.getElementById('weather-text');
+                    for (const [description, hours] of Object.entries(weatherSummary)) {
+                        const start = hours[0];
+                        const end = hours[hours.length - 1] + 1;
+                        const forecastText = `${start}:00 - ${end}:00: ${description}`;
 
                         const paragraph = document.createElement('p');
                         paragraph.textContent = forecastText;
@@ -142,49 +144,13 @@
                     console.log('Error fetching weather data:', error);
                     document.getElementById('weather-text').textContent = 'Kunde inte hämta väderleksrapport.';
                 });
-        }
-
-        const getSunriseSunset = (latitude, longitude) => {
-            const sunriseSunsetAPIURL = 'https://api.sunrise-sunset.org/json?lat=' + latitude + '&lng=' + longitude + '&formatted=0';
-
-            fetch(sunriseSunsetAPIURL)
-                .then(response => response.json())
-                .then(data => {
-                    const sunrise = new Date(data.results.sunrise);
-                    const sunset = new Date(data.results.sunset);
-
-                    const options = {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, hour: '2-digit', minute: '2-digit'};
-                    const sunriseLocal = sunrise.toLocaleString('sv-SE', options);
-                    const sunsetLocal = sunset.toLocaleString('sv-SE', options);
-
-                    document.getElementById('sunrise').textContent = 'Soluppgång: ' + sunriseLocal;
-                    document.getElementById('sunset').textContent = 'Solnedgång: ' + sunsetLocal;
-
-                    getWeatherForecast(latitude, longitude);
-                    createMap(latitude, longitude);
-                })
-                .catch(error => {
-                    console.log('Error fetching sunrise/sunset data:', error);
-                    document.getElementById('sunrise').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
-                    document.getElementById('sunset').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
-                });
-        }
-
-        const createMap = (latitude, longitude) => {
-            const map = L.map('map').setView([latitude, longitude], 13);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
-
-            L.marker([latitude, longitude]).addTo(map);
-        }
+        };
 
         navigator.geolocation.getCurrentPosition(position => {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
 
-            getSunriseSunset(latitude, longitude);
+            showWeatherForecastForNext24Hours(latitude, longitude);
         });
     </script>
 </body>
