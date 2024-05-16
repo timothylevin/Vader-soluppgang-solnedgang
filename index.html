@@ -168,7 +168,7 @@
                         if (weather !== currentWeather) {
                             // Start a new weather group
                             if (currentWeather !== null) {
-                                weatherText += '</div>';
+                                weatherText += '</div>'; // Add closing tag for previous group
                             }
                             weatherText += `<div class="weather-group"><span class="weather-time">${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}</span>: ${weather}`;
                             currentWeather = weather;
@@ -177,7 +177,11 @@
                             weatherText += ` - ${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}`;
                         }
                     }
-                    weatherText += '</div>';
+
+                    // Add closing tag for last group
+                    if (currentWeather !== null) {
+                        weatherText += '</div>';
+                    }
 
                     document.getElementById('weather-text').innerHTML = weatherText;
                 })
