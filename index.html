@@ -122,9 +122,30 @@
             fetch(weatherAPIURL)
                 .then(response => response.json())
                 .then(data => {
-                    const symbolCode = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
-                    const weatherDescription = translateWeatherSymbol(symbolCode);
-                    document.getElementById('weather-text').textContent = 'Väder: ' + weatherDescription;
+                    const timeseries = data.properties.timeseries;
+
+                    let weatherSummary = '';
+                    let currentWeather = translateWeatherSymbol(timeseries[0].data.next_1_hours.summary.symbol_code);
+                    let startTime = new Date(timeseries[0].time);
+
+                    for (let i = 1; i < timeseries.length; i++) {
+                        const weather = translateWeatherSymbol(timeseries[i].data.next_1_hours.summary.symbol_code);
+                        const time = new Date(timeseries[i].time);
+                        if (weather === currentWeather) {
+                            continue;
+                        } else {
+                            const endTime = time;
+                            weatherSummary += `${startTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})} - ${endTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}\n`;
+                            currentWeather = weather;
+                            startTime = endTime;
+                        }
+                    }
+
+                    // Add last weather entry
+                    const lastTime = new Date(timeseries[timeseries.length - 1].time);
+                    weatherSummary += `${startTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})} - ${lastTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}`;
+
+                    document.getElementById('weather-text').textContent = 'Väder: \n' + weatherSummary;
                 })
                 .catch(error => {
                     console.log('Error fetching weather data:', error);
@@ -177,132 +198,3 @@
     </script>
 </body>
 </html>
-ChatGPT
-För att lägga till en 24-timmars prognos i din väderleksrapport, kan vi använda samma API som vi redan använder för att hämta väderdata, och sedan bearbeta den för att sammanfatta timmarna med samma väder. Vi kan uppdatera JavaScript-koden för att göra detta.
-
-Här är den uppdaterade JavaScript-koden:
-
-html
-Kopiera kod
-<script>
-    const translateWeatherSymbol = (symbolCode) => {
-        switch(symbolCode) {
-            case 'clearsky_day':
-                return 'klart väder';
-            case 'clearsky_night':
-                return 'klart väder (natt)';
-            case 'partlycloudy_day':
-                return 'delvis molnigt';
-            case 'partlycloudy_night':
-                return 'delvis molnigt (natt)';
-            case 'cloudy':
-                return 'molnigt';
-            case 'rain':
-                return 'regn';
-            case 'lightrain_showers_day':
-                return 'lätt regnskurar';
-            case 'lightrain_showers_night':
-                return 'lätt regnskurar (natt)';
-            case 'rain_showers_day':
-                return 'regnskurar';
-            case 'rain_showers_night':
-                return 'regnskurar (natt)';
-            case 'thunderstorm':
-                return 'åska';
-            case 'sleet':
-                return 'snöblandat regn';
-            case 'snow':
-                return 'snö';
-            case 'sleet_showers_day':
-                return 'snöblandade regnskurar';
-            case 'sleet_showers_night':
-                return 'snöblandade regnskurar (natt)';
-            case 'snow_showers_day':
-                return 'snöskurar';
-            case 'snow_showers_night':
-                return 'snöskurar (natt)';
-            default:
-                return 'okänt väder';
-        }
-    }
-
-    const getWeather = (latitude, longitude) => {
-        const weatherAPIURL = 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=' + latitude + '&lon=' + longitude;
-
-        fetch(weatherAPIURL)
-            .then(response => response.json())
-            .then(data => {
-                const timeseries = data.properties.timeseries;
-
-                let weatherSummary = '';
-                let currentWeather = translateWeatherSymbol(timeseries[0].data.next_1_hours.summary.symbol_code);
-                let startTime = new Date(timeseries[0].time);
-
-                for (let i = 1; i < timeseries.length; i++) {
-                    const weather = translateWeatherSymbol(timeseries[i].data.next_1_hours.summary.symbol_code);
-                    const time = new Date(timeseries[i].time);
-                    if (weather === currentWeather) {
-                        continue;
-                    } else {
-                        const endTime = time;
-                        weatherSummary += `${startTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})} - ${endTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}\n`;
-                        currentWeather = weather;
-                        startTime = endTime;
-                    }
-                }
-
-                // Add last weather entry
-                const lastTime = new Date(timeseries[timeseries.length - 1].time);
-                weatherSummary += `${startTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})} - ${lastTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}`;
-
-                document.getElementById('weather-text').textContent = 'Väder: \n' + weatherSummary;
-            })
-            .catch(error => {
-                console.log('Error fetching weather data:', error);
-                document.getElementById('weather-text').textContent = 'Kunde inte hämta väderleksrapport.';
-            });
-    }
-
-    const getSunriseSunset = (latitude, longitude) => {
-        const sunriseSunsetAPIURL = 'https://api.sunrise-sunset.org/json?lat=' + latitude + '&lng=' + longitude + '&formatted=0';
-
-        fetch(sunriseSunsetAPIURL)
-            .then(response => response.json())
-            .then(data => {
-                const sunrise = new Date(data.results.sunrise);
-                const sunset = new Date(data.results.sunset);
-
-                const options = {timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, hour: '2-digit', minute: '2-digit'};
-                const sunriseLocal = sunrise.toLocaleString('sv-SE', options);
-                const sunsetLocal = sunset.toLocaleString('sv-SE', options);
-
-                document.getElementById('sunrise').textContent = 'Soluppgång: ' + sunriseLocal;
-                document.getElementById('sunset').textContent = 'Solnedgång: ' + sunsetLocal;
-
-                getWeather(latitude, longitude);
-                createMap(latitude, longitude);
-            })
-            .catch(error => {
-                console.log('Error fetching sunrise/sunset data:', error);
-                document.getElementById('sunrise').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
-                document.getElementById('sunset').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
-            });
-    }
-
-    const createMap = (latitude, longitude) => {
-        const map = L.map('map').setView([latitude, longitude], 13);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        L.marker([latitude, longitude]).addTo(map);
-    }
-
-    navigator.geolocation.getCurrentPosition(position => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        getSunriseSunset(latitude, longitude);
-    });
-</script>
