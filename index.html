@@ -156,22 +156,26 @@
                     let currentWeather = null;
                     let weatherText = '';
 
+                    let currentWeatherStartTime = null;
+
                     for (let i = 0; i < timeseries.length; i++) {
                         const time = new Date(timeseries[i].time);
                         const weather = translateWeatherSymbol(timeseries[i].data.next_1_hours.summary.symbol_code);
 
                         if (weather !== currentWeather) {
                             if (currentWeather !== null) {
-                                weatherText += '</p>';
+                                const currentTime = new Date();
+                                weatherText += ` ${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${currentTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}</p>`;
                             }
-                            weatherText += `<p>${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${weather}`;
                             currentWeather = weather;
-                        } else {
-                            weatherText += `, ${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}`;
+                            currentWeatherStartTime = time;
+                            weatherText += `<p>${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}`;
                         }
                     }
+                    const currentTime = new Date();
+                    weatherText += ` ${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${currentTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}</p>`;
 
-                    document.getElementById('weather-text').innerHTML = '24-timmars prognos: <br/>' + weatherText + '</p>';
+                    document.getElementById('weather-text').innerHTML = '24-timmars prognos: <br/>' + weatherText;
                 })
                 .catch(error => {
                     console.log('Error fetching weather forecast:', error);
