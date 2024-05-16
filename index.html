@@ -159,7 +159,8 @@
                     const timeseries = data.properties.timeseries;
 
                     let currentWeather = null;
-                    let weatherText = '';
+                    let weatherContainer = document.getElementById('weather-text');
+                    let weatherGroup = document.createElement('div');
 
                     for (let i = 0; i < timeseries.length; i++) {
                         const time = new Date(timeseries[i].time);
@@ -167,20 +168,24 @@
 
                         if (weather !== currentWeather) {
                             if (currentWeather !== null) {
-                                weatherText += '</div>';
+                                weatherContainer.appendChild(weatherGroup);
                             }
-                            weatherText += `<div class="weather-group"><span class="weather-time">${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}</span>: ${weather}`;
+                            weatherGroup = document.createElement('div');
+                            weatherGroup.classList.add('weather-group');
+                            weatherGroup.innerHTML = `<span class="weather-time">${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}</span>: ${weather}`;
                             currentWeather = weather;
                         } else {
-                            weatherText += ` - ${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}`;
+                            const weatherTime = document.createElement('span');
+                            weatherTime.classList.add('weather-time');
+                            weatherTime.textContent = `${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}`;
+                            weatherGroup.appendChild(document.createTextNode(' - '));
+                            weatherGroup.appendChild(weatherTime);
                         }
                     }
 
                     if (currentWeather !== null) {
-                        weatherText += '</div>';
+                        weatherContainer.appendChild(weatherGroup);
                     }
-
-                    document.getElementById('weather-text').innerText = weatherText;
                 })
                 .catch(error => {
                     console.log('Error fetching weather forecast:', error);
