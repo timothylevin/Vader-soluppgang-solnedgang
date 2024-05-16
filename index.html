@@ -165,15 +165,18 @@
                         if (weather !== currentWeather) {
                             if (currentWeather !== null) {
                                 const currentTime = new Date();
-                                weatherText += ` ${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${currentTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}</p>`;
+                                weatherText += ` ${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}`;
                             }
                             currentWeather = weather;
                             currentWeatherStartTime = time;
-                            weatherText += `<p>${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}`;
                         }
                     }
-                    const currentTime = new Date();
-                    weatherText += ` ${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${currentTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}</p>`;
+
+                    // Append last interval
+                    if (currentWeather !== null) {
+                        const currentTime = new Date();
+                        weatherText += ` ${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${currentTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}`;
+                    }
 
                     document.getElementById('weather-text').innerHTML = '24-timmars prognos: <br/>' + weatherText;
                 })
