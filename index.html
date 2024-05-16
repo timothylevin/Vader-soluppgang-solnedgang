@@ -122,9 +122,30 @@
             fetch(weatherAPIURL)
                 .then(response => response.json())
                 .then(data => {
-                    const symbolCode = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
-                    const weatherDescription = translateWeatherSymbol(symbolCode);
-                    document.getElementById('weather-text').textContent = 'Väder: ' + weatherDescription;
+                    const timeseries = data.properties.timeseries;
+
+                    let weatherSummary = '';
+                    let currentWeather = translateWeatherSymbol(timeseries[0].data.next_1_hours.summary.symbol_code);
+                    let startTime = new Date(timeseries[0].time);
+
+                    for (let i = 1; i < timeseries.length; i++) {
+                        const weather = translateWeatherSymbol(timeseries[i].data.next_1_hours.summary.symbol_code);
+                        const time = new Date(timeseries[i].time);
+                        if (weather === currentWeather) {
+                            continue;
+                        } else {
+                            const endTime = time;
+                            weatherSummary += `${startTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})} - ${endTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}\n`;
+                            currentWeather = weather;
+                            startTime = endTime;
+                        }
+                    }
+
+                    // Add last weather entry
+                    const lastTime = new Date(timeseries[timeseries.length - 1].time);
+                    weatherSummary += `${startTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})} - ${lastTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}`;
+
+                    document.getElementById('weather-text').textContent = 'Väder: \n' + weatherSummary;
                 })
                 .catch(error => {
                     console.log('Error fetching weather data:', error);
