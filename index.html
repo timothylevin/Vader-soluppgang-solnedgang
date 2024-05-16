@@ -61,7 +61,7 @@
     <div class="container">
         <div class="info-container" id="weather-info">
             <h2>Väderleksrapport</h2>
-            <p id="weather-text"></p>
+            <div id="weather-text"></div>
         </div>
 
         <div class="info-container" id="sunrise-sunset-info">
@@ -116,15 +116,27 @@
             }
         }
 
-        const getWeather = (latitude, longitude) => {
+        const getWeatherForecast = (latitude, longitude) => {
             const weatherAPIURL = 'https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=' + latitude + '&lon=' + longitude;
 
             fetch(weatherAPIURL)
                 .then(response => response.json())
                 .then(data => {
-                    const symbolCode = data.properties.timeseries[0].data.next_1_hours.summary.symbol_code;
-                    const weatherDescription = translateWeatherSymbol(symbolCode);
-                    document.getElementById('weather-text').textContent = 'Väder: ' + weatherDescription;
+                    const forecasts = data.properties.timeseries;
+                    const weatherContainer = document.getElementById('weather-text');
+
+                    for (let i = 0; i < 5; i++) {
+                        const forecast = forecasts[i];
+                        const time = new Date(forecast.time);
+                        const symbolCode = forecast.data.next_1_hours.summary.symbol_code;
+                        const weatherDescription = translateWeatherSymbol(symbolCode);
+                        const forecastTime = i === 0 ? 'inom 1 timme' : 'inom ' + (i + 1) + ' timmar';
+                        const forecastText = `${forecastTime}: ${weatherDescription}`;
+
+                        const paragraph = document.createElement('p');
+                        paragraph.textContent = forecastText;
+                        weatherContainer.appendChild(paragraph);
+                    }
                 })
                 .catch(error => {
                     console.log('Error fetching weather data:', error);
@@ -148,7 +160,7 @@
                     document.getElementById('sunrise').textContent = 'Soluppgång: ' + sunriseLocal;
                     document.getElementById('sunset').textContent = 'Solnedgång: ' + sunsetLocal;
 
-                    getWeather(latitude, longitude);
+                    getWeatherForecast(latitude, longitude);
                     createMap(latitude, longitude);
                 })
                 .catch(error => {
