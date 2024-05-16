@@ -108,8 +108,7 @@
             fetch(weatherAPIURL)
                 .then(response => response.json())
                 .then(data => {
-                    const forecasts
-                    const forecasts = data.properties.timeseries;
+                    const forecasts = data.properties.timeseries; // Changed here
 
                     let weatherSummary = {};
                     for (let i = 0; i < forecasts.length; i++) {
