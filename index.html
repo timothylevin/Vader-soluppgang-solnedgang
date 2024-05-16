@@ -165,7 +165,7 @@
                         if (weather !== currentWeather) {
                             if (currentWeather !== null) {
                                 const currentTime = new Date();
-                                weatherText += ` ${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}`;
+                                weatherText += `<br/>${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${time.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}`;
                             }
                             currentWeather = weather;
                             currentWeatherStartTime = time;
@@ -175,10 +175,10 @@
                     // Append last interval
                     if (currentWeather !== null) {
                         const currentTime = new Date();
-                        weatherText += ` ${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${currentTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}`;
+                        weatherText += `<br/>${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${currentTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}`;
                     }
 
-                    document.getElementById('weather-text').innerHTML = '24-timmars prognos: <br/>' + weatherText;
+                    document.getElementById('weather-text').innerHTML = '24-timmars prognos: ' + weatherText;
                 })
                 .catch(error => {
                     console.log('Error fetching weather forecast:', error);
