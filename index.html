@@ -125,6 +125,7 @@
             fetch(sunriseSunsetAPIURL)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Sunrise/Sunset data:', data); // Debugging line
                     const sunrise = new Date(data.results.sunrise);
                     const sunset = new Date(data.results.sunset);
 
@@ -149,7 +150,10 @@
             const forecastAPIURL = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${latitude}&lon=${longitude}`;
 
             fetch(forecastAPIURL)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Forecast response status:', response.status); // Debugging line
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Weather data:', data); // Debugging line
                     const timeseries = data.properties.timeseries;
@@ -161,7 +165,6 @@
 
                     let currentWeather = null;
                     let weatherText = '';
-
                     let currentWeatherStartTime = null;
 
                     for (let i = 0; i < timeseries.length; i++) {
