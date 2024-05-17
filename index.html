@@ -75,7 +75,8 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
         const translateWeatherSymbol = (symbolCode) => {
-            const baseSymbolCode = symbolCode ? symbolCode.split('_')[0] : '';
+            if (!symbolCode) return 'okänt väder';
+            const baseSymbolCode = symbolCode.split('_')[0];
             switch(baseSymbolCode) {
                 case 'clearsky':
                     return 'klart väder';
