@@ -189,11 +189,11 @@
 
                     // Append last interval
                     if (currentWeather !== null) {
-                        const currentTime = new Date();
-                        weatherText += `${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${currentTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}`;
+                        const lastTime = new Date(timeseries[timeseries.length - 1].time);
+                        weatherText += `${currentWeatherStartTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}-${lastTime.toLocaleTimeString('sv-SE', {hour: '2-digit', minute: '2-digit'})}: ${currentWeather}\n`;
                     }
 
-                    document.getElementById('weather-text').textContent = '24-timmars prognos: \n' + weatherText;
+                    document.getElementById('weather-text').textContent = `24-timmars prognos:\n${weatherText}`;
                 })
                 .catch(error => {
                     console.log('Error fetching weather forecast:', error);
@@ -205,10 +205,13 @@
             const map = L.map('map').setView([latitude, longitude], 13);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
-            L.marker([latitude, longitude]).addTo(map);
+            L.marker([latitude, longitude]).addTo(map)
+                .bindPopup('Din plats')
+                .openPopup();
         }
 
         navigator.geolocation.getCurrentPosition(position => {
@@ -218,9 +221,7 @@
             getSunriseSunset(latitude, longitude);
         }, error => {
             console.log('Error getting location:', error);
-            document.getElementById('sunrise').textContent = 'Kunde inte hämta plats.';
-            document.getElementById('sunset').textContent = 'Kunde inte hämta plats.';
-            document.getElementById('weather-text').textContent = 'Kunde inte hämta plats.';
+            document.getElementById('weather-text').textContent = 'Kunde inte hämta din plats.';
         });
     </script>
 </body>
