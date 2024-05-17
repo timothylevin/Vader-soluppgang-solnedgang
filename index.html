@@ -75,35 +75,75 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
         const translateWeatherSymbol = (symbolCode) => {
-            // Ta bort tid på dagen från symbolkoden
-            const baseSymbolCode = symbolCode.split('_')[0];
-            switch(baseSymbolCode) {
-                case 'clearsky':
-                    return 'klart väder';
-                case 'partlycloudy':
-                    return 'delvis molnigt';
-                case 'cloudy':
-                    return 'molnigt';
-                case 'fair':
-                    return 'växlande molnighet';
-                case 'rain':
-                    return 'regn';
-                case 'lightrain':
-                    return 'lätt regn';
-                case 'rain_showers':
-                    return 'regnskurar';
-                case 'thunderstorm':
-                    return 'åska';
-                case 'sleet':
-                    return 'snöblandat regn';
-                case 'snow':
-                    return 'snö';
-                case 'sleet_showers':
-                    return 'snöblandade regnskurar';
-                case 'snow_showers':
-                    return 'snöskurar';
-                default:
-                    return 'okänt väder';
+            // Kontrollera om symbolCode är definierad och innehåller ett understreck
+            if (symbolCode && symbolCode.includes('_')) {
+                const baseSymbolCode = symbolCode.split('_')[0];
+                switch(baseSymbolCode) {
+                    case 'clearsky':
+                        return 'klart väder';
+                    case 'partlycloudy':
+                        return 'delvis molnigt';
+                    case 'cloudy':
+                        return 'molnigt';
+                    case 'fair':
+                        return 'växlande molnighet';
+                    case 'rain':
+                        return 'regn';
+                    case 'lightrain':
+                        return 'lätt regn';
+                    case 'rain_showers':
+                        return 'regnskurar';
+                    case 'thunderstorm':
+                        return 'åska';
+                    case 'sleet':
+                        return 'snöblandat regn';
+                    case 'snow':
+                        return 'snö';
+                    case 'sleet_showers':
+                        return 'snöblandade regnskurar';
+                    case 'snow_showers':
+                        return 'snöskurar';
+                    default:
+                        return 'okänt väder';
+                }
+            } else {
+                // Om symbolCode inte innehåller ett understreck, använd symbolCode direkt
+                switch(symbolCode) {
+                    case 'clearsky_day':
+                    case 'clearsky_night':
+                        return 'klart väder';
+                    case 'partlycloudy_day':
+                    case 'partlycloudy_night':
+                        return 'delvis molnigt';
+                    case 'cloudy':
+                        return 'molnigt';
+                    case 'fair_day':
+                    case 'fair_night':
+                        return 'växlande molnighet';
+                    case 'rain':
+                        return 'regn';
+                    case 'lightrain':
+                    case 'lightrain_showers_day':
+                    case 'lightrain_showers_night':
+                        return 'lätt regn';
+                    case 'rain_showers_day':
+                    case 'rain_showers_night':
+                        return 'regnskurar';
+                    case 'thunderstorm':
+                        return 'åska';
+                    case 'sleet':
+                        return 'snöblandat regn';
+                    case 'snow':
+                        return 'snö';
+                    case 'sleet_showers_day':
+                    case 'sleet_showers_night':
+                        return 'snöblandade regnskurar';
+                    case 'snow_showers_day':
+                    case 'snow_showers_night':
+                        return 'snöskurar';
+                    default:
+                        return 'okänt väder';
+                }
             }
         }
 
