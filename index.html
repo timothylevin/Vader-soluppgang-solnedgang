@@ -145,9 +145,11 @@
                     let currentWeather = '';
                     let startTime = null;
                     let endTime = null;
+
                     for (let i = 0; i < timeseries.length; i++) {
                         const time = new Date(timeseries[i].time);
-                        const weather = translateWeatherSymbol(timeseries[i].data.next_1_hours?.summary?.symbol_code);
+                        const symbolCode = timeseries[i].data.next_1_hours?.summary?.symbol_code;
+                        const weather = translateWeatherSymbol(symbolCode);
 
                         if (weather !== currentWeather) {
                             if (startTime !== null) {
@@ -159,10 +161,12 @@
                         }
                     }
 
-                    // Hantera det sista väderförhållandet
+                    // Hantera det sista väderförhållandet korrekt
                     if (startTime !== null) {
                         endTime = new Date(timeseries[timeseries.length - 1].time);
-                        weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}<br>`;
+                        const lastSymbolCode = timeseries[timeseries.length - 1].data.next_1_hours?.summary?.symbol_code;
+                        const lastWeather = translateWeatherSymbol(lastSymbolCode);
+                        weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${lastWeather}<br>`;
                     }
 
                     document.getElementById('weather-text').innerHTML = '24-timmars prognos: <br>' + weatherForecast;
