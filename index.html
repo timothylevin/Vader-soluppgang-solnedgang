@@ -155,7 +155,9 @@
                         console.log('Weather:', weather);  // Log for debugging
 
                         if (weather !== currentWeather) {
+                            console.log('New weather condition detected:', weather);  // Log for debugging
                             if (startTime !== null) {
+                                console.log('Adding weather forecast:', `${formatTime(startTime)}-${formatTime(time)}: ${currentWeather}`);  // Log for debugging
                                 weatherForecast += `${formatTime(startTime)}-${formatTime(time)}: ${currentWeather}<br>`;
                             }
                             currentWeather = weather;
@@ -164,45 +166,46 @@
                     }
 
                     // Hantera det sista väderförhållandet korrekt
-                    if (startTime !== null) {
-                        const endTime = new Date(timeseries[timeseries.length - 1].time);
-                        weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}<br>`;
-                    }
+if (startTime !== null) {
+    const endTime = new Date(timeseries[timeseries.length - 1].time);
+    console.log('Adding last weather forecast:', `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}`);  // Log for debugging
+    weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}<br>`;
+}
 
-                    document.getElementById('weather-text').innerHTML = '24-timmars prognos: <br>' + weatherForecast;
-                })
-                .catch(error => {
-                    console.log('Fel vid hämtning av väderprognos:', error);
-                    document.getElementById('weather-text').textContent = 'Kunde inte hämta väderprognos.';
-                });
-        }
+document.getElementById('weather-text').innerHTML = '24-timmars prognos: <br>' + weatherForecast;
+})
+.catch(error => {
+    console.log('Fel vid hämtning av väderprognos:', error);
+    document.getElementById('weather-text').textContent = 'Kunde inte hämta väderprognos.';
+});
+}
 
-        const formatTime = (time) => {
-            return time.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
-        }
+const formatTime = (time) => {
+    return time.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+}
 
-        const createMap = (latitude, longitude) => {
-            const map = L.map('map').setView([latitude, longitude], 13);
+const createMap = (latitude, longitude) => {
+    const map = L.map('map').setView([latitude, longitude], 13);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-            L.marker([latitude, longitude]).addTo(map)
-                .bindPopup('Din plats')
-                .openPopup();
-        }
+    L.marker([latitude, longitude]).addTo(map)
+        .bindPopup('Din plats')
+        .openPopup();
+}
 
-        navigator.geolocation.getCurrentPosition(position => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+navigator.geolocation.getCurrentPosition(position => {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
 
-            getSunriseSunset(latitude, longitude);
-        }, error => {
-            console.log('Fel vid hämtning av plats:', error);
-            document.getElementById('weather-text').textContent = 'Kunde inte hämta din plats.';
-        });
-    </script>
+    getSunriseSunset(latitude, longitude);
+}, error => {
+    console.log('Fel vid hämtning av plats:', error);
+    document.getElementById('weather-text').textContent = 'Kunde inte hämta din plats.';
+});
+</script>
 </body>
 </html>
