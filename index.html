@@ -59,13 +59,13 @@
     <h1><a href="http://www.jaktkartan.se"><img src="https://github.com/timothylevin/Vader-soluppgang-solnedgang/raw/main/logo.png" alt="Jaktkartan.se logotyp" style="height: 70px;"></a></h1>
     <div class="container">
         <div class="info-container" id="sunrise-sunset-info">
-            <h2>Soluppgång/Solnedgång</h2>
+            <h2 id="sunrise-sunset-heading">Soluppgång/Solnedgång för plats</h2>
             <p id="sunrise">Laddar soluppgång...</p>
             <p id="sunset">Laddar solnedgång...</p>
         </div>
 
         <div class="info-container" id="weather-info">
-            <h2>Väderleksrapport</h2>
+            <h2 id="weather-heading">Väderleksrapport för plats</h2>
             <div id="weather-text">Laddar väder...</div>
         </div>
     </div>
@@ -74,10 +74,31 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
+        const getLocationName = (latitude, longitude) => {
+            const locationAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=sv`;
+            return fetch(locationAPIURL)
+                .then(response => response.json())
+                .then(data => {
+                    const cityName = data.city;
+                    return `${cityName}`;
+                })
+                .catch(error => {
+                    console.log('Error fetching location data:', error);
+                    return 'Okänd plats';
+                });
+        }
+
+        const updateHeadings = (latitude, longitude) => {
+            getLocationName(latitude, longitude)
+                .then(locationName => {
+                    document.getElementById('sunrise-sunset-heading').textContent = `Soluppgång/Solnedgång för ${locationName}`;
+                    document.getElementById('weather-heading').textContent = `Väderleksrapport för ${locationName}`;
+                });
+        }
+
         const translateWeatherSymbol = (symbolCode) => {
             if (!symbolCode) return 'okänt väder';
             const baseSymbolCode = symbolCode.split('_')[0];
-            console.log('Translating symbol:', symbolCode);  // Log for debugging
             switch(baseSymbolCode) {
                 case 'clearsky':
                     return 'klart väder';
@@ -114,7 +135,6 @@
             fetch(sunriseSunsetAPIURL)
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Sunrise/Sunset data:', data); // Debugging line
                     const sunrise = new Date(data.results.sunrise);
                     const sunset = new Date(data.results.sunset);
 
@@ -149,15 +169,12 @@
 
                     for (let i = 0; i < timeseries.length; i++) {
                         const time = new Date(timeseries[i].time);
+                        const
                         const symbolCode = timeseries[i].data.next_1_hours?.summary?.symbol_code;
-                        console.log('Symbol code:', symbolCode);  // Log for debugging
                         const weather = translateWeatherSymbol(symbolCode);
-                        console.log('Weather:', weather);  // Log for debugging
 
                         if (weather !== currentWeather) {
-                            console.log('New weather condition detected:', weather);  // Log for debugging
                             if (startTime !== null) {
-                                console.log('Adding weather forecast:', `${formatTime(startTime)}-${formatTime(time)}: ${currentWeather}`);  // Log for debugging
                                 weatherForecast += `${formatTime(startTime)}-${formatTime(time)}: ${currentWeather}<br>`;
                             }
                             currentWeather = weather;
@@ -165,47 +182,46 @@
                         }
                     }
 
-                    // Hantera det sista väderförhållandet korrekt
-if (startTime !== null) {
-    const endTime = new Date(timeseries[timeseries.length - 1].time);
-    console.log('Adding last weather forecast:', `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}`);  // Log for debugging
-    weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}<br>`;
-}
+                    if (startTime !== null) {
+                        const endTime = new Date(timeseries[timeseries.length - 1].time);
+                        weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}<br>`;
+                    }
 
-document.getElementById('weather-text').innerHTML = '24-timmars prognos: <br>' + weatherForecast;
-})
-.catch(error => {
-    console.log('Fel vid hämtning av väderprognos:', error);
-    document.getElementById('weather-text').textContent = 'Kunde inte hämta väderprognos.';
-});
-}
+                    document.getElementById('weather-text').innerHTML = '24-timmars prognos: <br>' + weatherForecast;
+                })
+                .catch(error => {
+                    console.log('Fel vid hämtning av väderprognos:', error);
+                    document.getElementById('weather-text').textContent = 'Kunde inte hämta väderprognos.';
+                });
+        }
 
-const formatTime = (time) => {
-    return time.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
-}
+        const formatTime = (time) => {
+            return time.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+        }
 
-const createMap = (latitude, longitude) => {
-    const map = L.map('map').setView([latitude, longitude], 13);
+        const createMap = (latitude, longitude) => {
+            const map = L.map('map').setView([latitude, longitude], 13);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
 
-    L.marker([latitude, longitude]).addTo(map)
-        .bindPopup('Din plats')
-        .openPopup();
-}
+            L.marker([latitude, longitude]).addTo(map)
+                .bindPopup('Din plats')
+                .openPopup();
+        }
 
-navigator.geolocation.getCurrentPosition(position => {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
+        navigator.geolocation.getCurrentPosition(position => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
 
-    getSunriseSunset(latitude, longitude);
-}, error => {
-    console.log('Fel vid hämtning av plats:', error);
-    document.getElementById('weather-text').textContent = 'Kunde inte hämta din plats.';
-});
-</script>
+            updateHeadings(latitude, longitude); // Uppdatera rubrikerna med platsnamn
+            getSunriseSunset(latitude, longitude);
+        }, error => {
+            console.log('Fel vid hämtning av plats:', error);
+            document.getElementById('weather-text').textContent = 'Kunde inte hämta din plats.';
+        });
+    </script>
 </body>
 </html>
