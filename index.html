@@ -59,13 +59,13 @@
     <h1><a href="http://www.jaktkartan.se"><img src="https://github.com/timothylevin/Vader-soluppgang-solnedgang/raw/main/logo.png" alt="Jaktkartan.se logotyp" style="height: 70px;"></a></h1>
     <div class="container">
         <div class="info-container" id="sunrise-sunset-info">
-            <h2 id="sunrise-sunset-heading">Soluppgång/Solnedgång för plats</h2>
+            <h2>Soluppgång/Solnedgång</h2>
             <p id="sunrise">Laddar soluppgång...</p>
             <p id="sunset">Laddar solnedgång...</p>
         </div>
 
         <div class="info-container" id="weather-info">
-            <h2 id="weather-heading">Väderleksrapport för plats</h2>
+            <h2>Väderleksrapport</h2>
             <div id="weather-text">Laddar väder...</div>
         </div>
     </div>
@@ -74,56 +74,46 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        const getLocationName = (latitude, longitude) => {
-            const locationAPIURL = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=sv`;
-            return fetch(locationAPIURL)
-                .then(response => response.json())
-                .then(data => {
-                    const cityName = data.city;
-                    return `${cityName}`;
-                })
-                .catch(error => {
-                    console.log('Error fetching location data:', error);
-                    return 'Okänd plats';
-                });
-        }
-
-        const updateHeadings = (latitude, longitude) => {
-            getLocationName(latitude, longitude)
-                .then(locationName => {
-                    document.getElementById('sunrise-sunset-heading').textContent = `Soluppgång/Solnedgång för ${locationName}`;
-                    document.getElementById('weather-heading').textContent = `Väderleksrapport för ${locationName}`;
-                });
-        }
-
         const translateWeatherSymbol = (symbolCode) => {
-            if (!symbolCode) return 'okänt väder';
-            const baseSymbolCode = symbolCode.split('_')[0];
-            switch(baseSymbolCode) {
-                case 'clearsky':
-                    return 'klart väder';
-                case 'partlycloudy':
-                    return 'delvis molnigt';
+            switch(symbolCode) {
+                case 'clearsky_day':
+                    return 'klart väder (dag)';
+                case 'clearsky_night':
+                    return 'klart väder (natt)';
+                case 'partlycloudy_day':
+                    return 'delvis molnigt (dag)';
+                case 'partlycloudy_night':
+                    return 'delvis molnigt (natt)';
                 case 'cloudy':
                     return 'molnigt';
-                case 'fair':
-                    return 'växlande molnighet';
+                case 'fair_day':
+                    return 'växlande molnighet (dag)';
+                case 'fair_night':
+                    return 'växlande molnighet (natt)';
                 case 'rain':
                     return 'regn';
-                case 'lightrain':
-                    return 'lätt regn';
-                case 'rain_showers':
-                    return 'regnskurar';
+                case 'lightrain_showers_day':
+                    return 'lätt regnskurar (dag)';
+                case 'lightrain_showers_night':
+                    return 'lätt regnskurar (natt)';
+                case 'rain_showers_day':
+                    return 'regnskurar (dag)';
+                case 'rain_showers_night':
+                    return 'regnskurar (natt)';
                 case 'thunderstorm':
                     return 'åska';
                 case 'sleet':
                     return 'snöblandat regn';
                 case 'snow':
                     return 'snö';
-                case 'sleet_showers':
-                    return 'snöblandade regnskurar';
-                case 'snow_showers':
-                    return 'snöskurar';
+                case 'sleet_showers_day':
+                    return 'snöblandade regnskurar (dag)';
+                case 'sleet_showers_night':
+                    return 'snöblandade regnskurar (natt)';
+                case 'snow_showers_day':
+                    return 'snöskurar (dag)';
+                case 'snow_showers_night':
+                    return 'snöskurar (natt)';
                 default:
                     return 'okänt väder';
             }
@@ -135,6 +125,7 @@
             fetch(sunriseSunsetAPIURL)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Sunrise/Sunset data:', data); // Debugging line
                     const sunrise = new Date(data.results.sunrise);
                     const sunset = new Date(data.results.sunset);
 
@@ -151,7 +142,8 @@
                 .catch(error => {
                     console.log('Error fetching sunrise/sunset data:', error);
                     document.getElementById('sunrise').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
-                    document.getElementById('sunset').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
+                    document.getElementById('sunset').
+textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
                 });
         }
 
@@ -166,24 +158,24 @@
                     let weatherForecast = '';
                     let currentWeather = '';
                     let startTime = null;
-
+                    let endTime = null;
                     for (let i = 0; i < timeseries.length; i++) {
                         const time = new Date(timeseries[i].time);
-                        const
-                        const symbolCode = timeseries[i].data.next_1_hours?.summary?.symbol_code;
-                        const weather = translateWeatherSymbol(symbolCode);
+                        const weather = translateWeatherSymbol(timeseries[i].data.next_1_hours?.summary?.symbol_code);
 
                         if (weather !== currentWeather) {
-                            if (startTime !== null) {
-                                weatherForecast += `${formatTime(startTime)}-${formatTime(time)}: ${currentWeather}<br>`;
+                              if (startTime !== null) {
+                                endTime = time;
+                                weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}<br>`;
                             }
                             currentWeather = weather;
                             startTime = time;
                         }
                     }
 
+                    // Hantera det sista väderförhållandet
                     if (startTime !== null) {
-                        const endTime = new Date(timeseries[timeseries.length - 1].time);
+                        endTime = new Date(timeseries[timeseries.length - 1].time);
                         weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}<br>`;
                     }
 
@@ -216,7 +208,6 @@
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
 
-            updateHeadings(latitude, longitude); // Uppdatera rubrikerna med platsnamn
             getSunriseSunset(latitude, longitude);
         }, error => {
             console.log('Fel vid hämtning av plats:', error);
