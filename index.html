@@ -75,45 +75,33 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
         const translateWeatherSymbol = (symbolCode) => {
-            switch(symbolCode) {
-                case 'clearsky_day':
-                    return 'klart väder (dag)';
-                case 'clearsky_night':
-                    return 'klart väder (natt)';
-                case 'partlycloudy_day':
-                    return 'delvis molnigt (dag)';
-                case 'partlycloudy_night':
-                    return 'delvis molnigt (natt)';
+            // Ta bort tid på dagen från symbolkoden
+            const baseSymbolCode = symbolCode.split('_')[0];
+            switch(baseSymbolCode) {
+                case 'clearsky':
+                    return 'klart väder';
+                case 'partlycloudy':
+                    return 'delvis molnigt';
                 case 'cloudy':
                     return 'molnigt';
-                case 'fair_day':
-                    return 'växlande molnighet (dag)';
-                case 'fair_night':
-                    return 'växlande molnighet (natt)';
+                case 'fair':
+                    return 'växlande molnighet';
                 case 'rain':
                     return 'regn';
-                case 'lightrain_showers_day':
-                    return 'lätt regnskurar (dag)';
-                case 'lightrain_showers_night':
-                    return 'lätt regnskurar (natt)';
-                case 'rain_showers_day':
-                    return 'regnskurar (dag)';
-                case 'rain_showers_night':
-                    return 'regnskurar (natt)';
+                case 'lightrain':
+                    return 'lätt regn';
+                case 'rain_showers':
+                    return 'regnskurar';
                 case 'thunderstorm':
                     return 'åska';
                 case 'sleet':
                     return 'snöblandat regn';
                 case 'snow':
                     return 'snö';
-                case 'sleet_showers_day':
-                    return 'snöblandade regnskurar (dag)';
-                case 'sleet_showers_night':
-                    return 'snöblandade regnskurar (natt)';
-                case 'snow_showers_day':
-                    return 'snöskurar (dag)';
-                case 'snow_showers_night':
-                    return 'snöskurar (natt)';
+                case 'sleet_showers':
+                    return 'snöblandade regnskurar';
+                case 'snow_showers':
+                    return 'snöskurar';
                 default:
                     return 'okänt väder';
             }
@@ -142,8 +130,7 @@
                 .catch(error => {
                     console.log('Error fetching sunrise/sunset data:', error);
                     document.getElementById('sunrise').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
-                    document.getElementById('sunset').
-textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
+                    document.getElementById('sunset').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
                 });
         }
 
@@ -164,7 +151,7 @@ textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
                         const weather = translateWeatherSymbol(timeseries[i].data.next_1_hours?.summary?.symbol_code);
 
                         if (weather !== currentWeather) {
-                              if (startTime !== null) {
+                            if (startTime !== null) {
                                 endTime = time;
                                 weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}<br>`;
                             }
