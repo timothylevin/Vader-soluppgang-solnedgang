@@ -151,7 +151,13 @@
             fetch(forecastAPIURL)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Weather data:', data); // Debugging line
                     const timeseries = data.properties.timeseries;
+
+                    if (!timeseries || timeseries.length === 0) {
+                        document.getElementById('weather-text').textContent = 'Ingen väderprognos tillgänglig.';
+                        return;
+                    }
 
                     let currentWeather = null;
                     let weatherText = '';
