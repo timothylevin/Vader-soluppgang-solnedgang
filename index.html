@@ -58,15 +58,15 @@
 <body>
     <h1><a href="http://www.jaktkartan.se"><img src="https://github.com/timothylevin/Vader-soluppgang-solnedgang/raw/main/logo.png" alt="Jaktkartan.se logotyp" style="height: 70px;"></a></h1>
     <div class="container">
-        <div class="info-container" id="weather-info">
-            <h2>Väderleksrapport</h2>
-            <div id="weather-text">Laddar väder...</div>
-        </div>
-
         <div class="info-container" id="sunrise-sunset-info">
             <h2>Soluppgång/Solnedgång</h2>
             <p id="sunrise">Laddar soluppgång...</p>
             <p id="sunset">Laddar solnedgång...</p>
+        </div>
+
+        <div class="info-container" id="weather-info">
+            <h2>Väderleksrapport</h2>
+            <div id="weather-text">Laddar väder...</div>
         </div>
     </div>
 
@@ -142,7 +142,8 @@
                 .catch(error => {
                     console.log('Error fetching sunrise/sunset data:', error);
                     document.getElementById('sunrise').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
-                    document.getElementById('sunset').textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
+                    document.getElementById('sunset').
+textContent = 'Kunde inte hämta soluppgång/solnedgångstider.';
                 });
         }
 
