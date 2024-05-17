@@ -163,11 +163,10 @@
                         const weather = translateWeatherSymbol(timeseries[i].data.next_1_hours?.summary?.symbol_code);
 
                         if (weather !== currentWeather) {
-                            if (startTime !== null) {
+                              if (startTime !== null) {
                                 endTime = time;
-                                weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}\n`;
+                                weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}<br>`;
                             }
-                            currentWeather = weather;
                             currentWeather = weather;
                             startTime = time;
                         }
@@ -176,10 +175,10 @@
                     // Hantera det sista väderförhållandet
                     if (startTime !== null) {
                         endTime = new Date(timeseries[timeseries.length - 1].time);
-                        weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}\n`;
+                        weatherForecast += `${formatTime(startTime)}-${formatTime(endTime)}: ${currentWeather}<br>`;
                     }
 
-                    document.getElementById('weather-text').textContent = '24-timmars prognos: \n' + weatherForecast;
+                    document.getElementById('weather-text').innerHTML = '24-timmars prognos: <br>' + weatherForecast;
                 })
                 .catch(error => {
                     console.log('Fel vid hämtning av väderprognos:', error);
